@@ -55,4 +55,50 @@ print f_fromkeys  # {'username': '(Unknown)', 'device': '(Unknown)'}
 
 # print f_fromkeys['name']  # KeyError: 'name'
 print f_fromkeys.get('name')  # None
-print f_fromkeys.get('name','N/A')  # N/A
+print f_fromkeys.get('name', 'N/A')  # N/A
+
+print 'name' in f_fromkeys
+print 'username' in f_fromkeys
+print f_fromkeys.has_key('name')
+print f_fromkeys.has_key('username')
+# False
+# True
+# False
+# True
+
+print f_fromkeys.items()  # [('username', '(Unknown)'), ('device', '(Unknown)')]
+iteritems = f_fromkeys.iteritems()
+print list(iteritems)  # [('username', '(Unknown)'), ('device', '(Unknown)')]
+print f_fromkeys.keys()  # ['username', 'device']
+iterkeys = f_fromkeys.iterkeys()
+print list(iterkeys)  # ['username', 'device']
+
+print f_fromkeys.pop('username')
+# (Unknown)
+print f_fromkeys
+# {'device': '(Unknown)'}
+
+f_fromkeys = f.fromkeys(x, 'N/A')
+print f_fromkeys
+# {'username': 'N/A', 'machine': 'N/A'}
+print f_fromkeys.popitem()
+# ('username', 'N/A')
+print f_fromkeys
+# {'machine': 'N/A'}
+
+n = {}
+print n.setdefault('name', 'N/A')
+# N/A
+print n
+# {'name': 'N/A'}
+n['name'] = 'Yanshi'
+print n.setdefault('name', 'N/A')
+# Yanshi
+print n
+# {'name': 'Yanshi'}
+
+d = {'title': 'Python Web Site', 'url': 'http://www.python.org', 'changed': '2018-08-29 00:53:34'}
+x = {'title': 'Python Language Website'}
+print d.update(x)  # None
+print d  # {'url': 'http://www.python.org', 'changed': '2018-08-29 00:53:34', 'title': 'Python Language Website'}
+print x  # {'title': 'Python Language Website'}
