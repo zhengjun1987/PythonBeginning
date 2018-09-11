@@ -1,0 +1,158 @@
+第三章 使用字符串
+	本章介绍如何使用字符串来设置其他值的格式、了解使用字符串可完成的重要任务（拆分、合并、查找等）
+
+第一节 字符串基本操作
+	标准的序列操作（索引、切片、乘法、contains检查、长度、最值）都适用于字符串；但字符串是不可变的，所以所有的元素赋值、切片赋值操作均为非法
+
+第二节 设置字符串的格式
+	字符串格式设置涉及内容较多，本书无法全面探索所有细节，只介绍主要部分
+	基本思想：对字符串调用方法format，并提供要设置其格式的值；每个值都会被插入字符串中，以替换被花括号括起来的【替换字段】
+
+	最原始的字符串格式化方法：使用% （官方不推荐）
+		>>> "{{ceci n'est pas une replacement field}}".format()
+		"{ceci n'est pas une replacement field}"
+		>>> name = "Erosion"
+		>>> "Hello, %s" % name
+		'Hello, Erosion'
+		>>> age = 74
+		>>> "Hello, %s! You are %s now." % (name,age)
+		'Hello, Erosion! You are 74 now.'
+		>>> last_name = "Idle"
+		>>> profession = "comedian"
+		>>> affiliation = "Morty Python"
+		>>> "Hello, %s %s! You are %s now. You are a %s. You are a member of %s." % (name,last_name,age,profession,affiliation)
+		'Hello, Erosion Idle! You are 74 now. You are a comedian. You are a member of Morty Python.'
+
+	第二种格式化方法：String.format() —— 对 %方式 的一次改进，用{}代替了%s	
+		>>> "Hello, {}! You are {} now.".format(name, age) #用{}代替了%s
+		'Hello, Erosion! You are 74 now.'
+		>>> "Hello, {1}! You are {0} now.".format(age, name)   #可以用数字下标对参数进行排序
+		'Hello, Erosion! You are 74 now.'
+		>>> "Hello, {name}! You are {age} now.".format(name=name, age=age)   #直接使用变量名称
+		'Hello, Erosion! You are 74 now.'
+		>>> "{foo} {1} {bar} {0}".format(1,2,bar=4,foo=3) #两种方式混杂
+		'3 2 4 1'
+		>>> fullname = ['Alfred',"Smoketoomuch"]
+		>>> "Mr {name[1]}".format(name = fullname)
+		'Mr Smoketoomuch'
+		>>> import math
+		>>> "The {mod.__name__} module defines the value {mod.pi} for π".format(mod=math)
+		'The math module defines the value 3.141592653589793 for π'
+		>>> "{pi!s} {pi!r} {pi!a}".format(pi="π") #三个标志s、r、a分别使用str、repr、ascii进行转换
+		"π 'π' '\\u03c0'"
+		>>> "The number is {num:.2f}".format(num=math.pi) #num:.2f对参数进行格式化要求,格式化规则基本与C语言相一致
+		'The number is 3.14'
+		>>> person={'name':name,'age':age}
+		>>> person
+		{'name': 'Erosion', 'age': 74}
+		>>> "Hello, {name}! You are {age} now.".format(**person)  #在引用字典时，可以使用**操作符进行拆包 format() argument after ** must be a mapping, not module
+		'Hello, Erosion! You are 74 now.'
+		>>> "Hello, {name} {last_name}! You are {age} now. You are a {profession}. You are a member of {affiliation}.".format(name=name,last_name=last_name,age=age,profession=profession,affiliation=affiliation)
+		'Hello, Erosion Idle! You are 74 now. You are a comedian. You are a member of Morty Python.'  #缺点：在引用多个变量时依然会很繁琐
+
+	第三种格式化方法：f-String —— 在字符串前面加一个f或者F（f的意思是fast）
+		>>> f"Hello, {name}! You are {age} now."
+		'Hello, Erosion! You are 74 now.'
+		>>> F"Hello, {name}! You are {age} now."
+		'Hello, Erosion! You are 74 now.'
+		>>> f"{37*2}" #在字符串中的花括号内直接写入Python表达式
+		'74'
+		>>> f"{name.lower()} is funny."  #在字符串中的花括号内直接写入Python方法调用
+		'erosion is funny.'
+		>>> f"The number is {math.pi:.2f}"  #num:.2f对参数进行格式化要求,格式化规则基本与C语言相一致
+		'The number is 3.14'
+		>>> f"{name:10}"
+		'Erosion   '
+		>>> f"{age:10}"
+		'        74'
+		>>> f"{3:10}"
+		'         3'
+		>>> f"{name:<10}"
+		'Erosion   '
+		>>> f"{name:^10}"
+		' Erosion  '
+		>>> f"{name:>10}"
+		'   Erosion'
+		>>> f"Hi, {name} {last_name}! You are {age}. You are a {profession} and you are a member of {affiliation}"
+		'Hi, Erosion Idle! You are 74. You are a comedian and you are a member of Morty Python'
+
+第四节 字符串方法
+	center方法 —— 通过在字符串两边添加字符（默认为空格）让字符串居中
+		>>> "The Middle by Jimmy Eat World".center(40)
+		'     The Middle by Jimmy Eat World      '
+		>>> "The Middle by Jimmy Eat World".center(40,"-")
+		'-----The Middle by Jimmy Eat World------'
+		>>> "天下第一雄关".center(20,"卍")
+		'卍卍卍卍卍卍卍天下第一雄关卍卍卍卍卍卍卍'
+	find方法 —— 在字符串中查找子字符串；返回第一个子字符串的索引，未找到则返回-1
+		第一个参数是要查找的子字符串，第二个参数是起始点下标，第三个参数是终止点下标
+			>>> "With a moo-moo here, and a moo-moo there".find("moo")
+			7
+			>>> title = "Morty Python's Flying Circus"
+			>>> title.find("Morty")
+			0
+			>>> title.find("Python")
+			6
+			>>> title.find("Zirquss")
+			-1
+			>>> "With a moo-moo here, and a moo-moo there".find("moo",8)
+			11
+			>>> "With a moo-moo here, and a moo-moo there".find("moo",12,15)
+			-1
+			>>> "With a moo-moo here, and a moo-moo there".find("moo",12,25)
+			-1
+			>>> "With a moo-moo here, and a moo-moo there".find("moo",12,30)
+			27
+			>>> "With a moo-moo here, and a moo-moo there".find("moo",28,30)
+			-1
+			>>> "With a moo-moo here, and a moo-moo there".find("moo",28)
+			31
+	join方法 —— 作用与split相反，用于合并序列的元素
+			>>> "+".join(['1','2','3'])
+			'1+2+3'
+			>>> "-".join(['1','2','3'])
+			'1-2-3'
+			>>> "×".join(['1','2','3'])
+			'1×2×3'
+			>>> dirs = ' ','usr','bin','env'
+			>>> dirs
+			(' ', 'usr', 'bin', 'env')
+			>>> '/'.join(dirs)
+			' /usr/bin/env'
+	split方法 —— 作用与join相反，用于拆分字符串
+		>>> "1+2+3+4+5".split("+")
+		['1', '2', '3', '4', '5']
+		>>> list("Python")
+		['P', 'y', 't', 'h', 'o', 'n']
+		>>> " /usr/bin/env".split("/")
+		[' ', 'usr', 'bin', 'env']
+		>>> "/usr/bin/env".split("/")
+		['', 'usr', 'bin', 'env']
+		>>> "Using the default".split()  #未指定分隔符参数，会使用默认的空格拆分字符串
+		['Using', 'the', 'default']
+	lower、upper、title方法 —— 大小写转换
+		>>> text = "world wide web"
+		>>> text.upper()
+		'WORLD WIDE WEB'
+		>>> text.title()
+		'World Wide Web'
+		>>> text.title().lower()
+		'world wide web'
+	replace方法 —— 替换子字符串
+		>>> "This is an anxis".replace("is", "eez")
+		'Theez eez an anxeez'
+	translate方法 —— 没多大用处
+	strip方法 —— 类比于Java的trim方法
+	判断字符串是否满足特定条件的方法 —— isalpha isalnum isdecimal isdigit isidentifier islower isnumeric isprintable isspace istitle isupper
+		>>> text.title().isalpha
+		<built-in method isalpha of str object at 0x1073ac4f0>
+		>>> text.title().isalpha()
+		False
+		>>> text.title().isalnum()
+		False
+		>>> text.title().isprintable()
+		True
+		>>> text.title().isupper()
+		False
+		>>> text.title().istitle()
+		True
