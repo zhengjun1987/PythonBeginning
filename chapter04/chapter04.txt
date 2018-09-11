@@ -1,0 +1,135 @@
+第四章 映射与字典
+列表用于将一系列的元素组织成数据结构并通过编号来访问
+本章介绍一种可以通过名称来访问其各个值的数据结构：映射mapping
+字典是Python唯一的内置映射类型，其中的值不按顺序排列而是存储在键的后面；键可能是数、字符或者元组
+
+第一节 字典的用途 —— 旨在让你轻松找到特定的键；获取其值
+
+第二节 创建和使用字典
+	字典由键及其对应的值组成，这种键值对称为项item；每个键与值之间用冒号:隔开；项之间由逗号隔开；整个字典放在花括号内
+	一、函数dict —— 从其他映射或键值对序列创建字典
+			>>> items = [("name","Gumby"),("age",42)]
+			>>> d = dict(items)
+			>>> d
+			{'name': 'Gumby', 'age': 42}
+		还可以通过关键字实参来调用dict函数创建字典
+			>>> d = dict(name='Gumby',age=42)
+			>>> d
+			{'name': 'Gumby', 'age': 42}
+	二、字典的基本操作
+		字典的基本行为在很多方面类似于序列
+			1.len(d)返回键值对数量
+			2.d[key]访问相对于key的值
+			3.d[key]=value 将value关联到键key
+			4.del d[k]删除键为k的项
+			5.key in d检查字典中是否含有键为key的项
+
+		键的类型：字典中的键可以是任何不可变的类型，如浮点数、整数、字符串、元组
+		自动添加：对于原本字典中没有的项，可以添加到其中
+		contains检查：k in d检查的k是索引而非值；而v in l(列表)查找的是值而非索引
+			>>> x = []
+			>>> x[42]="foo"
+			Traceback (most recent call last):
+			  File "<stdin>", line 1, in <module>
+			IndexError: list assignment index out of range
+			>>> x = {}
+			>>> x[42]="foo"
+			>>> x[42]
+			'foo'
+	三、将字符串格式设置功能作用于字典
+		>>> people = {
+				...     'Alice': {'phone': '2341', 'addr': 'Foo drive 23'},
+				...     'Beth': {'phone': '9102', 'addr': 'Bar street 42'},
+				...     'Cecil': {'phone': '3158', 'addr': 'Baz avenue 90'},
+				... }
+		>>> "Cecil's phone number is {phone}".format(**people['Cecil'])
+		"Cecil's phone number is 3158"
+		>>> f"Cecil's phone number is {people['Cecil']['phone']}"
+		"Cecil's phone number is 3158"
+		>>> "Cecil's phone number is {phone}".format_map(people['Cecil'])
+		"Cecil's phone number is 3158"
+	四、字典方法
+		clear方法 —— 清除所有的项，无返回值
+		copy方法 —— 返回一个新字典，其包含的键值对与原来的字典相同（浅复制，因为值本身是原件，而非复印件）
+				>>> x = {'username':"admin", "machines":["foo","bar","baz"]}
+				>>> y = x.copy()
+				>>> y["username"]="mlh"
+				>>> y['machines'].remove("bar")
+				>>> y
+				{'username': 'mlh', 'machines': ['foo', 'baz']}
+				>>> x
+				{'username': 'admin', 'machines': ['foo', 'baz']}
+
+			深复制方法：copy模块里的deepcopy方法
+				>>> from copy import deepcopy
+				>>> z = deepcopy(x)
+				>>> z['username']='alfred'
+				>>> z['machines'].append['nexus']
+				>>> z['machines'].insert(2,['nexus'])
+				>>> z
+				{'username': 'alfred', 'machines': ['foo', 'baz', ['nexus']]}
+				>>> x
+				{'username': 'admin', 'machines': ['foo', 'baz']}
+		fromkeys方法 —— 创建一个新的字典，其中包含指定的键，且每个键对应的值都是None(跟调用该方法的字典对象本身毫无关系)
+			>>> {}.fromkeys(['name','age'])
+			{'name': None, 'age': None}
+			>>> z.fromkeys(['name','age'])
+			{'name': None, 'age': None}
+			>>> z.fromkeys(['name','age'],('unknown')) #第一个参数为列表，包含目的字典的所有键；第二个参数为元组，为所有键的默认值
+			{'name': 'unknown', 'age': 'unknown'}
+		get方法 —— 安全访问字典的键值对，如果字典中没有所访问的键也不会报错，而是返回一个None
+			>>> z
+			{'username': 'alfred', 'machines': ['foo', 'baz', 'nexus']}
+			>>> z['password']
+			Traceback (most recent call last):
+			  File "<stdin>", line 1, in <module>
+			KeyError: 'password'
+			>>> z.get('password','N/A') //第一个参数为key，第二个参数是未找到后的默认值
+			'N/A'
+		setdefault方法 —— 类似于get方法；指定的值不存在时，就添加并返回默认值；指定的值存在时，就返回存在的值
+			>>> z
+			{'username': 'alfred', 'machines': ['foo', 'baz', 'nexus']}
+			>>> z.setdefault('pin','666666')
+			'666666'
+			>>> z
+			{'username': 'alfred', 'machines': ['foo', 'baz', 'nexus'], 'pin': '666666'}
+			>>> z.setdefault('name','alf')
+			'alf'
+			>>> z
+			{'username': 'alfred', 'machines': ['foo', 'baz', 'nexus'], 'pin': '666666', 'name': 'alf'}
+			>>> z.pop('name')
+			'alf'
+			>>> z
+			{'username': 'alfred', 'machines': ['foo', 'baz', 'nexus'], 'pin': '666666'}
+			>>> z.setdefault('username','alf')
+			'alfred'
+		update方法 —— 用一个字典中的项来更新另外一个字典
+			>>> z
+			{'username': 'alfred', 'machines': ['foo', 'baz', 'nexus'], 'pin': '666666'}
+			>>> z.update({'pin':'123456'})
+			>>> z
+			{'username': 'alfred', 'machines': ['foo', 'baz', 'nexus'], 'pin': '123456'}
+			>>> z.update(dict([('pin','1234567')]))
+			>>> z
+			{'username': 'alfred', 'machines': ['foo', 'baz', 'nexus'], 'pin': '1234567'}
+		items方法 —— 返回一个包含所有键值对的列表，每个键值对都是(k,v)的形式；字典项在列表中的顺序不确定
+		keys方法 —— 返回一个包含所有键的字典视图
+		values方法 —— 返回一个包含所有值的字典视图
+			>>> z
+			{'username': 'alfred', 'machines': ['foo', 'baz', 'nexus']}
+			>>> z.items()
+			dict_items([('username', 'alfred'), ('machines', ['foo', 'baz', 'nexus'])]) #返回值属于一种名为字典视图的特殊类型，其优点是始终反映着底层字典，即便修改了字典也是如此
+			>>> len(z.items())
+			2
+			>>> ('username','alfred') in z.items()
+			True
+		pop方法 —— 删除并返回指定的键值对，返回的是值。
+			>>> z.setdefault('name','alf')
+			'alf'
+			>>> z
+			{'username': 'alfred', 'machines': ['foo', 'baz', 'nexus'], 'pin': '666666', 'name': 'alf'}
+			>>> z.pop('name')
+			'alf'
+			>>> z
+			{'username': 'alfred', 'machines': ['foo', 'baz', 'nexus'], 'pin': '666666'}
+		popitem方法 —— 随机地弹出一个键值对；
