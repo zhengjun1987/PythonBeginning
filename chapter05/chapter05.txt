@@ -1,0 +1,208 @@
+第五章 条件、循环及其他语句
+
+第一节 再谈import和print
+一、打印多个参数
+		>>> print("Age",42) #多个参数之间默认使用空格隔开
+		Age 42 
+		>>> name = 'Gumby'
+		>>> salutation = 'Mr.'
+		>>> greeting = 'Hello,'
+		>>> print(greeting,salutation,name)  #多个参数之间默认使用空格隔开
+		Hello, Mr. Gumby
+		>>> greeting = 'Hello'
+		>>> print(greeting,',',salutation,name)
+		Hello , Mr. Gumby
+		>>> print(greeting+',',salutation,name)
+		Hello, Mr. Gumby
+		>>> print('I','wish','to','register','a','complaint',sep='_') #自定义分隔符
+		I_wish_to_register_a_complaint
+		>>> print('Hello,',end=' ');print('world!') #默认的结束符是换行符'\n',可以自定义结束符号
+		Hello, world!
+
+二、导入时重命名
+	导入函数的格式：
+		import module
+		from module import function1
+		from module import function1, function2
+		from module import *  #仅仅在你确定要导入模块中的所有的时候使用 —— 思考：from module import * 和 import module的区别
+	当两个或两个以上的包内包含相同名字的函数：
+		1、在调用函数之前加上包名
+		2、使用函数别名 from module import function1 as nickname 或者 import module as nickname
+
+
+第二节 赋值魔法
+	1.同时并行地给多个变量赋值
+			>>> x,y,z = 1,2,3
+			>>> print(x,y,z)
+			1 2 3
+			>>> x,y = y,x	#实际上执行的操作叫序列解包（或者 可迭代对象解包）：将一个序列解包，并将得到的值存储到一系列变量中去
+			>>> print(x,y,z)
+			2 1 3
+			>>> values = 1,2,3
+			>>> values
+			(1, 2, 3)
+			>>> x,y,z = values
+			>>> print(x,y,z)
+			1 2 3
+		在使用返回元组（其他序列或可迭代对象）的函数或方法时很有用	
+			>>> scout = {'name':'Robin','girlfriend':'Mary'}
+			>>> key,value = scout.popitem()
+			>>> key
+			'girlfriend'
+			>>> value
+			'Mary'
+		序列解包的等号两边的变量数量要相等，否则会出错报异常；
+		也可以使用带*的变量来收集多余的值（无论是在什么位置，带星号的变量接收的总是一个列表）
+			>>> a,b,*rest = 1,2,3,4
+			>>> rest
+			[3, 4]
+			>>> first, *middle, last = "Albus Percival Wulfric Brian Dumbledore".split(' ')
+			>>> middle
+			['Percival', 'Wulfric', 'Brian']
+	2.链式赋值 —— x = y = expression()
+	3.增强赋值 —— 使代码更紧凑、可读性更强
+
+第三节 代码块：缩进的乐趣
+	Python使用:标识代码块的开始，并将该代码块中的每行代码都缩进相同的程度；发现缩进量与之前相同时，你就知道当前代码块到此结束了
+
+第四节 条件和条件语句
+	1.布尔表达式
+		用作布尔表达式时，下面的值都将被视为False：
+			False，None，0，""，()，[]，{} #此处注意空字符串为False，但空格字符串为True
+		除此之外的所有值都被视为True
+			>>> True + False
+			1
+			>>> False == 0
+			True
+			>>> True == 1
+			True
+		True和False都是bool类型的值，而bool与list、str、tuple一样，可以用来转换其他的值：
+			>>> bool('I think, therefore I am')
+			True
+			>>> bool(42)
+			True
+			>>> bool('')
+			False
+			>>> bool(' ')
+			True
+			>>> bool(0)
+			False
+	2.有条件地执行和if-else语句
+		num = int(input("Enter a number:"))
+		if num > 0:
+		    print("The number is positive.")
+		elif num < 0:
+		    print("The number is negative.")
+		else:
+		    print("The number is zero")
+    3.代码嵌套nested block
+    4.更复杂的条件判断：
+    	比较运算符：
+	    	等于、不等于、大于、小于
+				>>> 1 < 2 & 2 > 3
+				False
+				>>> 1 < 2 and 2 > 3
+				False
+		相同运算符
+	    	x is y		x与y是同一个对象
+	    	x is not y	x与y不是同一个对象
+    	成员身份运算符
+	    	x in y		x是容器y的元素
+	    	x not in y	x不是容器y的元素
+    	布尔运算符（and not or）
+	5.断言 —— 让程序在错误条件出现之后立即崩溃胜过以后再崩溃
+		>>> age = 10
+		>>> assert 0 < age <100
+		>>> age = -1
+		>>> assert 0 < age <100, 'The age must be realistic'
+		Traceback (most recent call last):
+		  File "<stdin>", line 1, in <module>
+		AssertionError:The age must be realistic
+
+第五节 循环
+	一、while循环 —— 在判断条件为真时反复执行代码块
+	二、for循环 —— 定制的循环，可迭代对象iterable是可使用for循环进行遍历的对象
+		迭代（遍历）特定范围内的数是一种常见任务，Python提供了一个创建范围的内置函数range
+			list(range(1,10))
+			[1, 2, 3, 4, 5, 6, 7, 8, 9]
+			list(range(1,10,2))
+			[1, 3, 5, 7, 9]
+		迭代字典 —— 字典元素的顺序是不确定的，如果顺序很重要，可以将字典的键或值先进行排序再迭代
+		一些迭代工具:
+			zip函数 —— 将两个序列组合起来，并返回一个由元组组成的序列；当两个序列的长度不一致时，较小的那个序列被用尽之后会停止组合
+			迭代时获取索引enumerate函数 —— 为序列生成一个由索引和元素组成的元组的序列，便于在迭代时获取索引
+			反向迭代和排序后再迭代 —— reversed函数和sorted函数
+				a = [6, 5, 2, 0, 1, 8, 9]
+				list(reversed(a))
+				[9, 8, 1, 0, 2, 5, 6]
+				list(sorted(a))
+				[0, 1, 2, 5, 6, 8, 9]
+	三、跳出循环
+		break —— 跳出当前循环
+		continue —— 结束本次代码块执行，继续下一次代码块执行（跳过循环体中余下的语句，但不结束循环）
+		whileTrue/break —— 消除哑值，更灵活：while True导致永续循环，在循环体内部放一个if-break条件跳出循环
+		循环后的else子句 —— 循环体完整结束后（不是因为break而终止）执行的代码块；从而无需另外搞一个flag变量记录循环执行的情况来处理事务
+	四、简单推导：
+		列表推导:一种从其他列表创建列表的方式；其工作原理类似于for循环
+			[x*x for x in range(1,9)]
+			[1, 4, 9, 16, 25, 36, 49, 64]
+			[x*x for x in range(1,20)]
+			[1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256, 289, 324, 361]
+			[x*x for x in range(1,20,2)]
+			[1, 9, 25, 49, 81, 121, 169, 225, 289, 361]
+			[x*x for x in range(1,20) if x % 3 == 0]
+			[9, 36, 81, 144, 225, 324]
+			[(x,y) for x in range(3) for y in range(3)]
+			[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 0), (2, 1), (2, 2)]
+			girls = ['alice','bernice','clarice']
+			boys = ['chris','arnold','bob']
+			[b+'+'+g for b in boys for g in girls if b[0] == g[0]]
+			['chris+clarice', 'arnold+alice', 'bob+bernice']
+		字典推导：一种从其他列表创建字典的方式；其工作原理类似于for循环
+			squares = {i:f"{i} squared is {i**2}" for i in range(10)}
+			squares[9]
+			'9 squared is 81'
+		元组无法通过推导创建，而是创建生成器。见第九章。
+
+第六节 pass、del和exec
+	一、pass —— 有的时候什么都不用做。这种情况不多，但一旦遇到，pass语句大有裨益
+		充当占位符：因为Python中代码块不能为空，要解决这个问题，在代码块处加一句pass即可
+	二、del —— 对于不再使用的对象或数据结构，有两种方法让Python解释器回收其内存：
+		① 将所有指向该结构的变量置为None或者其他结构
+		② 使用del语句将其回收——不仅仅删除其指向的结构（前提是没有其他变量指向该结构，否则只删除该变量本身），还删除了该变量本身
+			综合起来可以理解为del语句只删除变量本身，而对于变量所指向的结构，在没有变量指向它之后会立即被Python解释器删除
+			boys
+			['chris', 'arnold', 'bob']
+			del boys
+			boys
+			Traceback (most recent call last):
+			  File "<input>", line 1, in <module>
+			NameError: name 'boys' is not defined
+	三、exec和eval —— 动态编写Python代码，并将其作为语句进行执行 或者 作为表达式进行计算
+		1.exec —— 将字符串作为代码执行
+			exec("arr = [x for x in range(10)]")
+			arr
+			[0, 1, 2, 3, 4, 5, 6, 7, 8, 9] #命名空间：置放变量的地方，类似于一个看不见的字典。此处exec语句中创建的arr变量就进入了执行这段代码的机器的命名空间
+			del arr
+			scope = {}
+			exec("arr = [x for x in range(10)];print(arr)",scope)
+			[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+			scope.arr
+			Traceback (most recent call last):
+			  File "<input>", line 1, in <module>
+			AttributeError: 'dict' object has no attribute 'arr'
+			scope['arr']
+			[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+			list(scope.keys())
+			['__builtins__', 'arr']  #此处的__bulletins__是一个包含了所有内置函数和值的字典
+			scope['x']=2
+			scope['y']=3
+			eval('x * y',scope)
+			6
+		2.eval —— 类似于exec，计算Python表达式字符串的值，并返回结果
+			eval(input('Enter an arithmetic expression:'))
+			Enter an arithmetic expression:>? 2**0.5
+			1.4142135623730951
+			与exec一样，也可以为eval提供命名空间
+		恶意代码可以调用全局变量重新赋值函数 —— 在Python内部执行不可信任的代码时没有安全的办法。
+
