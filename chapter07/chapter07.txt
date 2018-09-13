@@ -1,0 +1,107 @@
+第七章 再谈抽象
+	Python是一种面向对象的语言，本章的主题是创建自定义对象
+
+第一节 对象魔法
+	对象 —— 一系列数据属性以及一套访问操作这些数据的方法
+	多态 —— 可以对不同类型的对象执行同一个操作，均可正常运行
+	封装 —— 对外部隐藏有关对象工作原理的细节
+	继承 —— 可以基于通用类创造出专用类
+
+	一、多态
+		多态源自希腊语，意思是有多种形态，大致意思是即便你不知道变量的具体所指向的类型，也能够对其执行操作，【而且操作的具体实现将取决于对象所属的类型】
+		方法 —— 与对象属性相关联的函数专称方法
+			from random import choice
+			x = choice(["Hello,world",[1,2,'e','e',4]])
+			x.count('e')
+			1
+			x = choice(["Hello,world",[1,2,'e','e',4]])
+			x.count('e')
+			2
+			变量x无需关心其具体类型是字符串还是列表，都可以调用其count方法
+			每当无需知道对象的具体情形就能对其进行操作时，都是多态在起作用；这不仅仅适用于方法，我们还通过内置运算符和函数大量使用了多态
+				1+2
+				3
+				'Fish'+'license'
+				'Fishlicense'
+				加法运算符既可以用于数字，又可以用于字符串
+	二、封装encapsulation —— 向外部隐藏不必要的细节 听起来像多态（无需知道对象内部细节即可使用它），都是抽象原则
+		区别：多态让你无需知道【对象所属类型】就能调用其方法；封装让你无需知道【对象的构造】就能使用它
+		封装的好处：能够预期实例对象是抽象的，调用方法时无需操心其他事情（例如干扰全局变量、空间分配、垃圾回收等）
+		属性：属性是归属于对象的变量，就像方法一样（归属于对象的函数）
+		每个实例对象都有自己的状态，其状态由其属性来描述；对象的方法有可能修改这些属性，因此对象将一系列方法组合起来并赋予它们访问属性的权限，属性可以在函数调用之间存储值。
+	三、继承 —— 新的子类型继承父类型所有的属性和方法
+
+第二节 类
+	一、类到底是什么 —— 每个实例对象都属于特定的类，并被称为该类的实例；类是由其支持的方法定义的，类的所有实例都有该类定义的方法
+		要定义子类，就必须定义新的方法或者重写其父类方法
+	二、创建自定义类
+		class Bird: # class语句创建独立的命名空间，用于在其中定义函数
+		    song = "Squaawk!"
+
+		    def sing(self):	# 类方法定义，类似于函数定义，但位于class语句内部；
+		        print(self.song)	# self总是指向实例对象本身
+	三、属性、函数和方法
+		函数和方法的区别 —— 体现在类方法上就是是否将对象本身作为函数的第一个参数
+			bird = Bird()
+			bird.sing()	# 这是方法调用
+			Squaawk!
+			birdsing = bird.sing
+			birdsing()
+			Squaawk!
+			repr(birdsing)
+			'<bound method Bird.sing of <__main__.Bird object at 0x107ba9520>>'
+			repr(bird)
+			'<__main__.Bird object at 0x107ba9520>'
+			bird.song	# 这是个表达式
+			'Squaawk!'
+	四、再谈隐藏 —— Python没有像Java那样提供4种不同级别的私有程度，不过某种程度上，用一个或两个下划线打头相当于两种不同的私有程度
+		bird.song = "Boogoo!"	# 有的人认为这种做法没有任何问题；
+		# 但有人认为这违反了封装原则，他们认为应该对外部完全隐藏对象状态 —— 将属性定义为私有，私有属性不能从外部访问，只能通过存取器方法来访问
+		bird.sing()
+		Boogoo!
+		bird2 = Bird()
+		bird2.sing()
+		Squaawk!
+	五、类的命名空间
+		方法定义和闭包大致等价 def foo(x):return x*x  => foo = lambda x : x*x (其实都是function)
+		在class语句中定义的代码都是在一个特殊的命名空间（类的命名空间）内执行的；所有的类成员都可以访问这个命名空间
+			class MemberCounter:
+			    members = 0
+			    def __init__(self) -> object:
+			        MemberCounter.members += 1
+			m1 = MemberCounter()
+			MemberCounter.members
+			1
+			m2 = MemberCounter()
+			MemberCounter.members
+			2
+			m1.members
+			2
+			m2.members
+			2
+			m1.members = "Two"	# 此时m1的属性members指向了一个字符串，不再指向父类的属性members（类似于第六章讨论的局部变量和全局变量的关系）
+			m2.members
+			2
+			MemberCounter.members
+			2
+	六、指定超类：子类扩展父类的定义；要指定父类，在class语句类名后用圆括号括起父类名
+	七、深入探讨继承
+		issubclass函数 —— Return whether 'cls' is a derived from another class or is the same class
+		isinstance函数 —— Return whether an object is an instance of a class or of a subclass thereof
+		实例对象的__class__属性
+		类的__bases__属性
+	八、多个超类:__bases__的复数形式
+		基类可能有多个，这叫做多重继承，是一个强大的工具。有可能会带来并发症
+		如果多个超类以不同方式实现了同一个方法，则必须在class语句中谨慎地排列这些父类的顺序：排在前的类的方法将覆盖后面的类的方法
+	九、接口和内省
+		接口这一概念和多态有关。处理多态对象时，仅需关心其接口（协议）—— 对外暴露的方法和属性
+		Python不会像Java那样显式地指定对象必须包含哪些方法才能用作参数，而是自己检查所需方法是否存在
+		hasattr函数 —— Return whether the object has an attribute with the given name.
+		getattr函数 —— Get a named attribute from an object; getattr(x, 'y') is equivalent to x.y. When a default argument is given, it is returned when the attribute doesn't exist; without it, an exception is raised in that case.
+		setattr函数 —— 与getattr函数恰好相反，可用于设置对象属性
+		callable函数 —— Return whether the object is callable (i.e., some kind of function).
+	十、抽象基类: Python通过引用第三方模块实现了抽象基类
+		抽象基类的实现步骤： 1 导入abc模块的ABC类和abstractmethod注解 2.目标接口类继承ABC,并将抽象方法带上abstractmetho注解
+		见abstract.py
+
+第三节 面向对象设计的一些思考
