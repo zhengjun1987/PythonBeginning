@@ -1,0 +1,56 @@
+第八章 异常
+
+第一节 异常是什么
+Python使用异常来表示异常状态，并在错误时引发异常；
+异常对象未被处理（或捕获）时，程序会显示一条错误消息
+事实上，每个异常都是某个类的实例
+	1 // 0
+	Traceback (most recent call last):
+	  File "<input>", line 1, in <module>
+	ZeroDivisionError: integer division or modulo by zero
+
+第二节 让事情沿着你指定的轨道出错
+出现问题 ——> 自动引发异常 ——> 让异常在设计的流程中得到处理
+	一、raise语句：引发异常
+		格式：raise Exception的子类或实例
+			raise Exception("Just kidding")
+			Traceback (most recent call last):
+			  File "<input>", line 1, in <module>
+			Exception: Just kidding
+		常见的内置异常类
+			Exception 		所有异常类的基类
+			AttributeError	引用属性失败或者给属性赋值失败
+			OSError 		操作系统无法执行特定任务
+			IndexError		使用的序列下标出错
+			KeyError		使用的字典键出错
+			NameError		找不到名称（变量）时触发
+			SyntaxError		代码语法出错
+			TypeError		将内置操作或函数用于类型不正确的对象
+			ValueError		将内置操作或函数用于类型正确但值域不符合要求的值
+			ZeroDivisionError	除法或求模运算时第二个参数为0
+	二、自定义的异常类
+		创建异常类：与创建其他类一样，但务必直接或间接继承Exception
+
+第三节 捕获异常 —— try/except语句
+异常从函数向外传播到调用函数的地方；如果未被捕获，将继续向程序最顶层传播 —— 这意味着你可以用try/except语句捕捉他人所编写的函数的异常
+	一、无需提供参数
+		捕获到异常后，若要重新引发它，可以调用raise且无需提供任何参数 (见muffled.py)
+	二、多个except语句 —— 异常处理不会导致代码混乱，而使用if语句来检查各种可能出现的错误会导致代码可读性非常差（见division.py）
+	三、一石三鸟：使用一个except语句捕获多种异常 —— 可以在一个元组中指定这些异常（圆括号很重要），这样做的缺点是错误信息不太精确
+	四、捕获对象: except (Error1, Error2) as e: 其中的变量e即捕获到的对象实例本身
+	五、一网打尽：即便程序处理了好几种异常，还是有可能有很多漏网之鱼
+		用一段代码捕获所有异常，只需在except语句中不指定任何任何异常类
+	六、一切正常时：else语句
+	七、最后：finally语句 —— 不管主干部分是否发生异常，都将执行finally子句；所以finally子句通常是用作内存清理、事务失误回滚等收尾工作
+
+第四节 异常和函数 
+	异常发生之后向上传递未被处理，最终会终止程序并显示栈跟踪信息（见 exceptions_path.py）
+
+第五节 异常之禅(请求宽恕比获得许可更加容易)
+	try/except语句和if判断检查的比较 （见 describe_person.py）
+
+第六节 不那么异常的情况
+	如果只是想发出警告，指出情况偏离了正轨 —— 可以使用warnings中的函数warn
+	from warnings import warn
+	warn("I've got a bad feeling about this")
+	<input>:1: UserWarning: I've got a bad feeling about this
