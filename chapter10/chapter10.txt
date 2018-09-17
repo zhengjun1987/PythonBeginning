@@ -1,0 +1,135 @@
+第十章 标准库模块
+第一节 模块
+	一、模块就是程序 —— 模块并不是用来执行操作的，而是用于定义变量、函数、类等
+	二、模块的作用域
+		模块像类一样有自己的作用域：模块中定义的函数、类、变量赋值都将成为模块的属性
+		1.在模块中定义函数
+			重用代码 —— 将代码放在模块中，可以在多个应用程序中使用（模块化 —— 重用代码）
+		2.在模块中添加测试代码
+			每个模块（运行环境）都有一个变量__name__
+			在主程序（包括交互式解释器）的__name__为"__main__"
+			在导入模块中的__name__是该模块的名称
+			根据上面的设定，可以让模块中的测试性代码的运行更加合理（用if语句判断当前是否是主程序环境）
+		3.让模块可用
+			Python的打包技术日益复杂，各自为政；需要学习很多才能掌握
+			① 将模块放在正确的位置：系统路径sys.path
+			② 告诉解释器到哪里去找：
+				将模块所在的位置包含在环境变量PYTHONPATH（基本上类似sys.path）中
+		4.包（package）
+			为组织模块，可以将它们编组为包。包其实就是另一种模块，可能包含其他模块
+			模块存储在扩展名为.py的文件中，而包则是一个目录
+			要被Python视为包，目录必须包含文件__init__.py
+			像普通模块一样导入包，文件__init__.py就是包的内容
+			要将模块加入包中，只需将模块文件放入包目录即可；还可以在包中嵌套其他包
+第二节 探索模块（dir，__all__、help、__doc__、__file__两个函数三个方法）
+	一、模块包含内容 —— 探索模块最直接的方式是使用Python解释器进行研究
+		1.使用dir —— 列出对象的所有属性（列出模块所有的类、函数、变量等）
+		2.变量__all__包含一个列表，内容与dir类似
+			列表所列示内容由模块内部直接设置”__all__ = ['Error', 'copy', 'deepcopy']“;目的是定义公用接口
+			from copy import * 的来源就是__all__列表
+			如果编写模块时不定义__all__列表，则在模块被导入时会将所有不以下划线开头的函数、变量(math、sys等模块)
+	二、使用help获取帮助——获取函数、变量的帮助信息、文档
+		help的优点是可以获取到更多的信息
+	三、文档：有关模块信息的自然来源
+		与其在Python文档或者书籍查找API信息，不如直接检查obj.__doc__更加方便快捷
+		并非所有的模块和函数都有详尽的文档字符串，且有时候对其工作原理需要更详尽的描述 —— Python库参考文档
+		http://docs.python.org/library
+	四、使用源代码
+		需要真正理解Python语言，就需要了解一些不阅读源代码就无法了解的事情
+		学习Python的最佳方式就是阅读源代码和手动编写代码
+		找到模块代码所在的文件目录 —— module.__file__
+			pprint.pprint(hello.__file__)
+			'/Users/zhengjun/Desktop/PythonBeginning/hello.py'
+			pprint.pprint(math.__file__)
+			'/usr/local/Cellar/python@3.9/3.9.6/Frameworks/Python.framework/Versions/3.9/lib/python3.9/lib-dynload/math.cpython-39-darwin.so'
+			pprint.pprint(copy.__file__)
+			'/usr/local/Cellar/python@3.9/3.9.6/Frameworks/Python.framework/Versions/3.9/lib/python3.9/copy.py'
+		在文本编辑器中打开源代码文件，关闭时不能保存修改，否则有可能对源文件构成破坏
+		某些模块完全无法读懂，可能是解释器的组成部分或者用C语言编写的
+第三节 标准库：一些常用模块
+	一、sys模块:与Python解释器相关的变量和函数
+		argv 命令行参数、脚本名
+		exit([arg]) 退出当前程序
+		modules 将模块名映射到加载的模块的一个字典
+		path  检索模块的目录列表
+		platform 解释器运行平台标识符
+		stdin、stdout、stderr 标准io流，类似于文件的对象
+	二、os模块：访问多个操作系统服务
+		environ 系统环境变量的映射
+		system(command) 在子shell中执行操作系统命令；可以用来执行任何外部程序，这在UNIX系统中很有用（启动GUI等）
+			os.system(r'C:\"Program Files"\"Mozilla Firefox"\firefox.exe')可以启动Win10中的Firefox
+			os.startfile(filepath)与它功能类似，且路径对空格无严格要求
+				启动浏览器的另一个方法：import webbrowser；webbrowser.open(target_url)
+		sep、pathsep、linesep 操作系统路径使用的文件路径分隔符、多条路径组合分隔符、文本行分隔符
+		urandom 使用因系统而异的”真正“强加密的随机源
+	三、fileinput模块：让你轻松地迭代一系列文本文件中的所有行
+		input([files[, inplace[, backup]]]) 迭代输入流中的行
+		filename() 返回当前文件名称
+		lineno() 返回累计的行数
+		filelineno() 返回所在文件的累计行数
+		isfirstline() 返回当前行是否是文件第一行
+		nextfile() 关闭当前文件并跳转至下一个文件
+		close() 关闭序列
+	四、集合、堆和双端队列
+		1.集合set —— 新版本的Python中set由内置类set提供，可以直接使用
+		2.堆heap —— 一种优先队列，优先队列让你能够以任何顺序添加对象、并随时在两次添加对象之间找出并删除最小的元素
+			相较于列表方法min,堆方法效率高得多
+			heap元素的排列顺序看上去随意但是实际并非如此，其顺序保证位置i处的元素总是大于i//2处的元素
+				反过来说就是小于2i或2i+1处的元素
+			Python没有独立的堆类型，只有一个包含一些堆操作函数的模块heapq （q表示queue），必须使用列表来表示堆对象本身
+				heappush(heap,x)	将x压入堆中:Push item onto heap, maintaining the heap invariant.
+				heappop(heap)		从堆中弹出最小元素:Pop the smallest item off the heap, maintaining the heap invariant.
+				heapify(heap)		让列表具备堆特征:Transform list into a heap, in-place, in O(len(heap)) time.
+				heapreplace(heap,x)	弹出最小元素，并将x压入堆中:Pop and return the current smallest value, and add the new item.
+									This is more efficient than heappop() followed by heappush(), and can be
+								    more appropriate when using a fixed-size heap.  Note that the value
+								    returned may be larger than item!  That constrains reasonable uses of
+								    this routine unless written as part of a conditional replacement:
+								    
+								        if item > heap[0]:
+								            item = heapreplace(heap, item)
+				nlargest(n,iter)	返回iter中n个最大元素 —— 不仅仅适用于heap，任何iterable均可
+				nsmallest(n,iter) 	返回iter中n个最小元素 —— 不仅仅适用于heap，任何iterable均可
+		3.双端队列 —— 按元素添加的顺序删除
+			模块collections中包含deque以及其他几个集合类型
+				collections.__all__
+				['ChainMap', 'Counter', 'OrderedDict', 'UserDict', 'UserList', 'UserString', 'defaultdict', 'deque', 'namedtuple']
+			双端队列deque —— 支持在队首高效地附加和弹出元素
+	五、time模块
+		time模块所包含的函数：获取当前时间、操作时间和日期、从字符串读取日期、将日期格式化成字符串的函数
+			time.time() 		Return the current time in seconds since the Epoch.time() -> floating point number
+			time.strftime() 	strftime(format[, tuple]) -> string. Convert a time tuple to a string according to a format specification
+			time.localtime()	localtime([seconds]) -> (tm_year,tm_mon,tm_mday,tm_hour,tm_min,tm_sec,tm_wday,tm_yday,tm_isdst)
+			time.sleep()		让解释器等待指定的秒数
+			time.strptime()		将一个字符串（格式与strftime相同）转换成日期元组
+			time.asctime()		
+	六、random模块
+		包含生成伪随机数的函数 —— 编写模拟程序、生成随机输出程序
+			random.random()			生成一个0~1之间的随机浮点数
+			random.getrandbits(n)	生成一个n位随机二进制整数
+			random.uniform(a, b)	生成一个a~b之间的随机浮点数
+			random.randrange(t,e,p)	从range(t,e,p)中随机选择一个数
+			random.choice(seq)		从序列seq中随机选择一个元素
+			random.shuffle(seq)		随机混淆可变序列中的元素位置
+			random.sample(seq, n)	从可变序列中随机抽样n个不同元素
+	七、shelve和json
+	八、re —— 我知道，我将使用正则表达式来解决这个问题，这让我面临的问题变成了两个
+		正则表达式：可匹配文本片段的模式
+		通配符：句点'.'除了换行符之外的所有字符都匹配，被称为通配符
+		通配符的转义：当匹配字符串中的句点时，需要用到转义’\\.‘ —— 此处双反斜杠的意义包含：解释器执行的转义、模块re执行的转义
+		字符集：要排除字符集，可以在开头添加一个^字符，例如[^abc] （遇到需要匹配^、-、]字符的均需要转义）
+		二选一和子模式：二选一匹配，使用圆括号将两个模式括起来，中间用管道字符'|'隔开，例如 P(ython|erl) organi(zation|sation)
+		可选模式和重复模式： 
+			(pattern)?		可包括可不包括（0个或1个） 
+			(pattern)+		可重复1或多次
+			(pattern){m,n}	可重复m~n次 
+			(pattern)*		可重复0，1或多次
+		匹配对象和编组 () => $1、$2...
+		替换中的组号和函数 —— 重复运算是贪婪的，稍不注意就会将后续需要捕捉的字符也匹配进去，导致后续无法匹配；解决办法：通常是排除后续的字符
+			re.sub('\\*([^\\*]+)\\*','<em>\\1</em>','Hello,*world*!')
+			'Hello,<em>world</em>!'
+			多用加号+，少用星号*，用星号大概率出错
+			re.compile('\\[([^\\]]+)\\]').sub(lambda mat: str(eval(mat.group(1),{})),"The sum of 7 and 9 is [7+9]")
+			'The sum of 7 and 9 is 16'
+	九、其他有趣的标准模块
+		argparse、cmd、csv、datetime、enum、functools、hashlib、itertools、logging、statistics、timeit、profile、trace
