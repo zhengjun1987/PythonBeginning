@@ -1,0 +1,36 @@
+第十一章 文件 —— 程序与更大的外部世界交互：文件和流
+
+	第一节 打开文件
+		打开文件，使用自动导入的io模块中的open函数
+			open(filePathString, mode='r', buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None)
+		文件模式
+			显式地指定读取模式'r'与默认模式一样。
+			写入模式'w'能够写入文件，文件原内容会被截断，如果原文件不存在则先创建
+			独占模式'x'比写入模式更进一步，新建文件并读写。如果已经有原文件存在则报错FileExistsError
+			'+'模式可以与其他模式混用，既可以读又可以写； r+与w+之间的区别在于后者截断文件，前者不会。
+			默认模式为'rt' —— 这意味着将文件视为经过编码的Unicode文本，因此将自动执行UTF-8编码和解码；
+							还将自动转换换行符（默认'\n',读取时换成'\r'或'\r\n'）
+			二进制模式'rb' —— 禁用上述文本操作，用于读取音频、图像材料
+
+	第二节 文件的基本方法
+		文件对象的基本方法、其他类似于文件的对象
+		一、读取和写入
+		二、使用管道重定向输出
+			在bash等shell中，可以依次输入多个命令，并用管道将它们连接起来：
+				cat somefile.txt | python3 somescript.py | sort
+			上述管道包含三条命令：
+				cat somefile.txt 将文件的内容写入标准输出stdout
+				python3 somescript.py 执行Python脚本文件somescript；这个脚本从stdin中读取，将结果写入stdout
+				sort 读取stdin的所有文本，将各行按字母顺序排序并输出到stdout
+			管道字符'|'的作用：将上个命令的标准输出连接到下一个命令的标准输入
+		三、读取和写入行
+			f.readlines f.writelines
+		四、关闭文件 —— 关闭文件并无坏处，在某些操作系统和设置中可以避免无意义地锁定文件以防修改
+			对于写入过的文件，一定要将其关闭（Python可能将写入内容缓存在某个地方暂时存储，以提高效率；但如果一旦程序崩溃，写入内容就丢失了，无法找回）
+			安全的做法是，在写入完成后立即关闭文件
+			要确保文件得以关闭，可以使用try-finally语句
+				file = open('filename.postfix')
+				try:
+					#文件读写操作
+				finally:
+					file.close
