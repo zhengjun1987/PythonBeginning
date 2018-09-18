@@ -34,3 +34,19 @@
 					#文件读写操作
 				finally:
 					file.close
+		五、使用文件的基本方法
+			1.read(n)
+			2.read()
+			3.readline()
+			4.readlines()
+
+	第三节 迭代文件内容
+		常见的文件操作是迭代其内容，并在迭代过程中反复采取某种措施
+		在这些迭代中，都将文件用作了上下文管理器，确保文件得以关闭
+			first,second,third = open('files/test.txt')
+			first
+			'this\n'
+			second
+			"isn't a\n"
+			third
+			'haiku'
